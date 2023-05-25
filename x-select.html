@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    
+  </style>
+</head>
+<body>
+  <x-select id="mySelect" value="aaaa">
+    <x-option value="a">aaaa</x-option>
+    <x-option value="b">bbbb</x-option>
+    <x-option value="c">cccc</x-option>
+  </x-select>
+
+  <template id="selectTpl">
+    <style>
+      :host {
+        position: relative;
+        display: inline-block;
+      }
+      .select-inner {
+        height: 34px;
+        border: 1px solid #cdcdcd;
+        box-sizing: border-box;
+        font-size: 13px;
+        outline: none;
+        padding: 0 10px;
+        border-radius: 4px;
+        cursor: default;
+      }
+
+      .select-inner:hover {
+        border-color: #333333;
+      }
+      .drop {
+        position: absolute;
+        top: 36px;
+        left: 0;
+        width: 100%;
+        padding: 4px 0;
+        border-radius: 2px;
+        overflow: auto;
+        max-height: 256px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+        display: none;
+      }
+    </style>
+
+    <input class="select-inner" readonly>
+    <div class="drop">
+      <slot></slot>
+    </div>
+  </template>
+
+  <template id="optionTpl">
+    <style>
+      :host {
+        position: relative;
+      }
+      .option {
+        height: 32px;
+        line-height: 32px;
+        box-sizing: border-box;
+        font-size: 13px;
+        color: #333333;
+        padding: 0 10px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+      .option:hover {
+        background-color: #f4f4f4;
+      }
+    </style>
+    <div class="option">
+      <slot></slot>
+    </div>
+  </template>
+
+<script>
+  let testCount = 1;
+
+  class Select extends HTMLElement {
+    constructor() {
+      // 必须首先调用 super 方法
+      super();
+      const shadowELe = this.attachShadow({ mode: 'open' });
+      const content = document.querySelector('#selectTpl').content.cloneNode(true);
+      shadowELe.appendChild(content);
+
+      this.$input = shadowELe.querySelector('.select-inner');
+      this.dropEle = shadowELe.querySelector('.drop');
+      // 设置初始值
+      this.value === this.$input.setAttribute('value', this.getAttribute('value') || '');
+      
+      this._bindEvents();
+      
+
+      this.BodyClick = () => {
+        this.dropEle.style.display = 'none';
+      };
+    }
+
+    _bindEvents () {
+      this.$input.addEventListener('click', () => {
+        this.dropEle.style.display = 'block';
+      });
+      
+      this.dropEle.addEventListener('click', (ev) => {
+        const target = ev.target;
+        const nodeName = target.nodeName.toLowerCase();
+        if (nodeName === 'x-option') {
+          this.value = target.getAttribute('value');
+          this.$input.setAttribute('value', target.innerHTML);
+          // 自定义事件
+          const detail = {
+            detail: {
+              value: this.value,
+            },
+          };
+          this.dispatchEvent(
+            new CustomEvent('change', detail)
+          );
+          this.setAttribute('cc', testCount ++);
+          this.dropEle.style.display = 'none';
+        }
+      });
+    }
+
+    connectedCallback () {
+      document.addEventListener('click', this.BodyClick, true);
+    }
+
+    disconnectedCallback () {
+      document.removeEventListener('click', this.BodyClick);
+    }
+
+    adoptedCallback () {
+      console.log('Custom square element moved to new page.');
+    }
+
+    attributeChangedCallback (name, oldValue, newValue) {
+      console.log(`${name}属性变了，原值${oldValue}，现值${newValue}`);
+    }
+
+    static get observedAttributes() {
+      return ['value', 'cc'];
+    }
+  }
+  
+  class Option extends HTMLElement {
+    constructor() {
+      // 必须首先调用 super 方法
+      super();
+      
+      const shadowELe = this.attachShadow({ mode: 'open' });
+      const content = document.querySelector('#optionTpl').content.cloneNode(true);
+      shadowELe.appendChild(content);
+    }
+    static get observedAttributes() {
+      return ['value'];
+    }
+  }
+
+  customElements.define('x-select', Select);
+  customElements.define('x-option', Option);
+
+  document.querySelector('#mySelect').addEventListener('change', (e) => {
+    console.log(e);
+  });
+</script>
+</body>
+
+</html>
