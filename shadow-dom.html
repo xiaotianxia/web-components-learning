@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 20px;
+    }
+    audio[customed] {
+      height: 30px;
+      overflow: hidden;
+    }
+
+    audio[customed]::-webkit-media-controls,
+    audio[customed]::-webkit-media-controls-enclosure {
+      height: 30px;
+      min-height: 30px;
+    }
+
+    audio[customed]::-webkit-media-controls-enclosure {
+      background-color: rgba(44, 62, 80, .8);
+    }
+
+    audio[customed]::-webkit-media-controls-enclosure {
+      border-radius: 0;
+    }
+
+    audio[customed]::-webkit-media-controls-volume-control-container {
+      display: none!important;
+    }
+
+    video[customed]::-webkit-media-controls-panel {
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #00d8ff);
+    }
+
+    input[type=range] {
+      background-color: red;
+    }
+
+    input[customed]::-webkit-slider-runnable-track {
+      background-color: rgba(255, 0, 0, .2);
+    }
+  </style>
+</head>
+<body>
+  original: <br>
+  <audio src="https://www.runoob.com/try/demo_source/horse.mp3" controls></audio>
+  <br>
+  customed: <br>
+  <audio src="https://www.runoob.com/try/demo_source/horse.mp3" customed controls></audio>
+  <br>
+  
+  original: <br>
+  <video src="https://www.runoob.com/try/demo_source/movie.mp4" controls></video>
+  <br>
+  customed: <br>
+  <video src="https://www.runoob.com/try/demo_source/movie.mp4" customed controls></video>
+  <br>
+
+  original: <br>
+  <input type="range">
+  <br>
+  customed: <br>
+  <input type="range" customed>
+
+<script>
+  console.log(`document.querySelectorAll('video')[0].shadowRoot`);
+  console.log(document.querySelectorAll('video')[0].shadowRoot);
+</script>
+</body>
+
+</html>

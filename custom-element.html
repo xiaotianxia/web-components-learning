@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button is="plastic-button">点我!</button>
+</body>
+<script>
+  class PlasticButton extends HTMLButtonElement {
+  	constructor() {
+    	super();
+
+    	this.addEventListener('click', () => {
+        // 动效逻辑
+        alert(123);
+    	});
+  	}
+  }
+
+  customElements.define('plastic-button', PlasticButton, { extends: 'button' });
+</script>
+
+<script>
+  const plasticButton = document.createElement('button', { is: 'plastic-button' });
+  plasticButton.textContent = "再点我!";
+  document.body.appendChild(plasticButton);
+</script>
+</html>
