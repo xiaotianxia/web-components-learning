@@ -146,6 +146,7 @@
 
     attributeChangedCallback (name, oldValue, newValue) {
       console.log(`${name}属性变了，原值${oldValue}，现值${newValue}`);
+      this[name] = newValue;
     }
 
     static get observedAttributes() {
@@ -172,6 +173,7 @@
 
   document.querySelector('#mySelect').addEventListener('change', (e) => {
     console.log(e);
+    console.log(document.querySelector('#mySelect').value);
   });
 </script>
 </body>
