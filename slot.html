@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    class UserCard extends HTMLElement {
+      static get observedAttributes() {
+        return ["img", "name", "email", "buttonclick"];
+      }
+      constructor() {
+        super();
+        const template = document.createElement("template");
+        template.innerHTML = `
+        <img src="" class="img" />
+        <div class="container">
+          <p class="name">姓名</p>
+          <p class="email">邮箱</p>
+          <button class="buttonclick">Follow</button>
+          <input type="text" class="input" value="1" />
+        </div>
+        <slot name="eat">我喜欢吃：肉肉</slot>
+        <slot name="likes">我的爱好是：敲代码</slot>
+        
+        <style>
+          :host {
+            display: flex;
+            align-items: center;
+            width: 650px;
+            height: 280px;
+            background: #d4d4d4!important;
+            border: 1px solid #d5d5d5;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+          }
+          .img {
+            width: 200px;
+            margin-right: 20px;
+          }
+        </style>
+       `;
+        // 创建影子dom
+        this.shadowDOM = this.attachShadow({ mode: "closed" });
+
+        this.shadowDOM.appendChild(template.content.cloneNode(true));
+      }
+      // 插入dom时
+      connectedCallback() {
+        this.shadowDOM.querySelector(".input").focus();
+      }
+      // 属性更新、删除、增加; 首次插入dom也会触发
+      attributeChangedCallback(name, oldValue, newValue) {
+        console.log(name, oldValue, newValue);
+        this.updateAttr(name, newValue);
+      }
+      updateAttr(name, value) {
+        var el = this.shadowDOM.querySelector(`.${name}`);
+        if (name === "img") {
+          el.setAttribute("src", value);
+        } else if (name === "buttonclick") {
+          el.onclick = new Function(value);
+        } else {
+          el.innerText = value;
+        }
+      }
+      // 提供api把内部的值传递出去
+      getInputValue() {
+        return this.shadowDOM.querySelector(".input").value;
+      }
+    }
+    window.customElements.define("user-card", UserCard);
+  </script>
+</body>
+
+  <user-card
+    id="user-card"
+    img="https://gw.alicdn.com/imgextra/i3/O1CN01E9ABza1II30bzYSKS_!!6000000000869-2-tps-120-108.png"
+    name="王五3"
+    email="110@qq.com"
+    buttonclick="test()">
+    <div slot="likes" class="likes">
+      <h3>我的爱好有很多：</h3>
+      <p>🏀</p>
+      <p>🎣</p>
+      <p>🏸</p>
+    </div>
+    <div slot="eat" class="eat">
+      <h3>我爱吃的很多：</h3>
+      <p>🐟</p>
+      <p>🍚</p>
+      <p>🦆</p>
+    </div>
+  </user-card>
+
+  <button onclick="getUserCardInputValue()">
+    读取user-card的输入框的value
+  </button>
+
+  <script>
+    function getUserCardInputValue() {
+      var card3 = document.getElementById("user-card");
+      alert(card3.getInputValue());
+    }
+
+    function test() {
+      alert("you followed me!");
+    }
+  </script>
+</html>
